@@ -1,6 +1,6 @@
-console.log('file loaded');
+console.log("file loaded");
 
 export default function Bs() {
-  console.log('function called');
-  return <div></div>;
+  console.log("function called");
+  return <div>TEST</div>;
 }
