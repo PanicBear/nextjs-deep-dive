@@ -21,6 +21,7 @@ interface MutationResult {
 }
 
 const Bs = dynamic(
+  //@ts-ignore
   () =>
     new Promise((resolve) =>
       setTimeout(() => resolve(import("@components/bs")), 10000)
