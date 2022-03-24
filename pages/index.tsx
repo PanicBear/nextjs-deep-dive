@@ -3,6 +3,7 @@ import { FloatingButton, Item, Layout } from "@components/index";
 import { ProductWithCount } from "@customTypes/index";
 import { client } from "@libs/server/index";
 import type { NextPage } from "next";
+import useSWR, { SWRConfig } from "swr";
 
 interface ProductResponse {
   ok: boolean;
@@ -20,21 +21,24 @@ function setState(state: ProductState) {
   }
 }
 
-const Home: NextPage<{ products: ProductWithCount[] }> = ({ products }) => {
+const Home: NextPage = () => {
+  const { data } = useSWR<ProductResponse>("/api/products");
   return (
     <Layout seoTitle="Home" title="홈" hasTabBar>
       <div className="flex flex-col space-y-1 py-2 divide-y">
-        {products?.map((product) => (
-          <Item
-            key={product.id}
-            id={product.id}
-            title={`[${setState(product.state)}]` + product.name}
-            price={product.price}
-            hearts={product._count?.favs}
-            imageUrl={product.imageUrl}
-            comments={1}
-          />
-        ))}
+        {data
+          ? data.products?.map((product) => (
+              <Item
+                key={product.id}
+                id={product.id}
+                title={`[${setState(product.state)}]` + product.name}
+                price={product.price}
+                hearts={product._count?.favs || 0}
+                imageUrl={product.imageUrl}
+                comments={1}
+              />
+            ))
+          : "Loading..."}
         <FloatingButton href={"/products/upload"}>
           <svg
             className="h-6 w-6"
@@ -57,9 +61,28 @@ const Home: NextPage<{ products: ProductWithCount[] }> = ({ products }) => {
   );
 };
 
+export const Page: NextPage<{ products: ProductWithCount[] }> = ({
+  products,
+}) => {
+  return (
+    <SWRConfig
+      value={{
+        fallback: {
+          "/api/products": {
+            ok: true,
+            products,
+          },
+        },
+      }}
+    >
+      <Home />
+    </SWRConfig>
+  );
+};
+
 export async function getServerSideProps() {
   const products = await client.product.findMany({});
-  console.log(products);
+  console.log("SSR");
   return {
     props: {
       products: JSON.parse(JSON.stringify(products)),
@@ -67,4 +90,4 @@ export async function getServerSideProps() {
   };
 }
 
-export default Home;
+export default Page;
