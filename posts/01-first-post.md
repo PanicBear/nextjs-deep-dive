@@ -1,7 +1,7 @@
 ---
 title: Welcome Everyone
 date: 2022.03.26
-caregory: thoughts
+category: thoughts
 ---
 
 # Welcom everyone!
