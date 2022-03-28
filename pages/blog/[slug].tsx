@@ -1,9 +1,12 @@
-import { readdirSync, readFileSync } from 'fs';
+import { read, readdirSync, readFileSync } from 'fs';
 import matter from 'gray-matter';
-import { NextPage } from 'next';
+import { GetStaticProps, NextPage } from 'next';
+import remarkHtml from 'remark-html';
+import remarkParse from 'remark-parse/lib';
+import { unified } from 'unified';
 
-const Post: NextPage = () => {
-  return <h1>hi</h1>;
+const Post: NextPage<{ post: string }> = ({ post }) => {
+  return <div>{post}</div>;
 };
 
 export async function getStaticPaths() {
@@ -22,17 +25,15 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps() {
-  // const blogPosts = readdirSync('./posts').map((file) => {
-  //   const content = readFileSync(`./posts/${file}`, 'utf-8');
-  //   return matter(content).data;
-  // });
-
-  // console.log(blogPosts);
+export const getStaticProps: GetStaticProps = async (ctx: any) => {
+  const { content } = matter.read(`./posts/${ctx.params?.slug}.md`);
+  const { value: post } = await unified().use(remarkParse).use(remarkHtml).process(content);
 
   return {
-    props: {},
+    props: {
+      post,
+    },
   };
-}
+};
 
 export default Post;
