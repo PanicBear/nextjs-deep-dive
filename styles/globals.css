@@ -5,3 +5,15 @@
 body {
   overflow-y: scroll;
 }
+
+.blog-post_content h1 {
+  @apply text-red-500 mb-5;
+}
+
+.blog-post_content p {
+  @apply mb-1 text-gray-600;
+}
+
+.blog-post_content ul {
+  @apply pl-10 list-disc;
+}

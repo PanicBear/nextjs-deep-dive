@@ -7,3 +7,8 @@ category: thoughts
 # testing~~
 
 12341234123512345
+
+- i
+- like
+- potatos
+  - fried, of course

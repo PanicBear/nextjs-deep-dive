@@ -1,3 +1,4 @@
+import Layout from '@components/layout';
 import { read, readdirSync, readFileSync } from 'fs';
 import matter from 'gray-matter';
 import { GetStaticProps, NextPage } from 'next';
@@ -5,8 +6,12 @@ import remarkHtml from 'remark-html';
 import remarkParse from 'remark-parse/lib';
 import { unified } from 'unified';
 
-const Post: NextPage<{ post: string }> = ({ post }) => {
-  return <div>{post}</div>;
+const Post: NextPage<{ post: string; data: { title: string; date: string; category: string } }> = ({ post, data }) => {
+  return (
+    <Layout title={data.title} seoTitle={data.title}>
+      <div className="blog-post_content" dangerouslySetInnerHTML={{ __html: post }}></div>
+    </Layout>
+  );
 };
 
 export async function getStaticPaths() {
@@ -26,12 +31,13 @@ export async function getStaticPaths() {
 }
 
 export const getStaticProps: GetStaticProps = async (ctx: any) => {
-  const { content } = matter.read(`./posts/${ctx.params?.slug}.md`);
+  const { content, data } = matter.read(`./posts/${ctx.params?.slug}.md`);
   const { value: post } = await unified().use(remarkParse).use(remarkHtml).process(content);
 
   return {
     props: {
       post,
+      data,
     },
   };
 };
