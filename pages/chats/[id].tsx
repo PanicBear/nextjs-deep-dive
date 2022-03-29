@@ -80,6 +80,7 @@ const ChatDetail: NextPage = () => {
           ? `${data.chatRoom.buyer.id !== user?.id ? data.chatRoom.buyer.name : data.chatRoom.product.user.name}`
           : 'Loading'
       }
+      seoTitle={'채팅방'}
     >
       <div className="py-10 pb-16 px-4 space-y-4">
         {data?.chatRoom

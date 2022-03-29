@@ -46,7 +46,7 @@ const BuyerPick: NextPage = () => {
   }, [buyerData, buyerLoading, buyerError, router]);
 
   return (
-    <Layout canGoBack title="예약자 선택">
+    <Layout canGoBack title="예약자 선택" seoTitle="예약자 선택">
       <div className="divide-y-[1px] ">
         {data
           ? data.users?.map((user) => {

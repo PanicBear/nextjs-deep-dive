@@ -26,7 +26,7 @@ const Chats: NextPage = () => {
   const { user, isLoading } = useUser();
   const { data, error } = useSWR<ChatRoomResult>(user?.id ? `/api/chats` : null);
   return (
-    <Layout hasTabBar title="채팅">
+    <Layout hasTabBar title="채팅" seoTitle="채팅">
       <div className="divide-y-[1px] ">
         {data?.chatRooms.map((chatRoom) => {
           const opponent: UserInfo = chatRoom.buyer.id !== user?.id ? chatRoom.buyer : chatRoom.product.user;
