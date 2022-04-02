@@ -49,6 +49,14 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({ product, relatedProducts, is
     }
   }, [chatData, router]);
 
+  if (router.isFallback) {
+    return (
+      <Layout seoTitle={''}>
+        <span>Loading</span>
+      </Layout>
+    );
+  }
+
   return (
     <Layout canGoBack seoTitle={'Product Detail'}>
       <div className="px-4 py-10">
@@ -160,7 +168,7 @@ const ItemDetail: NextPage<ItemDetailResponse> = ({ product, relatedProducts, is
 export const getStaticPaths: GetStaticPaths = () => {
   return {
     paths: [],
-    fallback: 'blocking',
+    fallback: true,
   };
 };
 
@@ -194,6 +202,7 @@ export const getStaticProps: GetStaticProps = async (ctx: GetStaticPropsContext)
     },
   });
   const isLiked = false;
+  await new Promise((resolve) => setTimeout(resolve, 10000));
   return {
     props: {
       product: JSON.parse(JSON.stringify(product)),

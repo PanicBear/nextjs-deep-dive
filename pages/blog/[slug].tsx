@@ -15,18 +15,9 @@ const Post: NextPage<{ post: string; data: { title: string; date: string; catego
 };
 
 export async function getStaticPaths() {
-  const paths = readdirSync('./posts').map((file) => {
-    const slug = file.substr(0, file.lastIndexOf('.')) || file;
-    return {
-      params: {
-        slug,
-      },
-    };
-  });
-
   return {
-    paths: [...paths],
-    fallback: false,
+    paths: [],
+    fallback: 'blocking',
   };
 }
 
