@@ -1,13 +1,14 @@
 import { Answer, Post, User } from '.prisma/client';
 import { Layout, TextArea } from '@components/index';
 import { cls, useMutation } from '@libs/client';
-import type { NextPage } from 'next';
+import type { GetStaticPaths, GetStaticProps, GetStaticPropsContext, NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import useSWR from 'swr';
+import useSWR, { SWRConfig } from 'swr';
+import client from '@libs/server/client';
 
 interface AnswerForm {
   answer: string;
@@ -190,4 +191,78 @@ const CommunityPostDetail: NextPage = () => {
   );
 };
 
-export default CommunityPostDetail;
+export const Page: NextPage<{ id: number; post: PostWithUser; isWondered: boolean }> = ({ id, post, isWondered }) => {
+  const key = `/api/posts/${id}`;
+  return (
+    <SWRConfig
+      value={{
+        fallback: {
+          [key]: { ok: true, post, isWondered },
+        },
+      }}
+    >
+      <CommunityPostDetail />
+    </SWRConfig>
+  );
+};
+
+export const getStaticPaths: GetStaticPaths = async (ctx) => {
+  return {
+    paths: [],
+    fallback: 'blocking',
+  };
+};
+
+export const getStaticProps: GetStaticProps = async (ctx: GetStaticPropsContext) => {
+  if (!ctx.params?.id) {
+    return {
+      props: {},
+    };
+  }
+  const post = await client.post.findUnique({
+    where: {
+      id: +ctx.params.id,
+    },
+    include: {
+      answers: {
+        select: {
+          answer: true,
+          id: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+            },
+          },
+        },
+        // take: 10,
+        // skip: 20,
+      },
+      _count: {
+        select: {
+          wonderings: true,
+          answers: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          avatar: true,
+        },
+      },
+    },
+  });
+  const isWondered = false;
+  return {
+    props: {
+      id: +ctx.params.id,
+      post,
+      isWondered,
+    },
+    revalidate: 20,
+  };
+};
+
+export default Page;
